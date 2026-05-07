@@ -1,76 +1,66 @@
-# CareerSphere AI - Intelligent Multi-Agent Career Planner
+# CareerSphere AI
 
-CareerSphere AI is a multi-agent career assistant that analyzes a user's skills, recommends opportunities, checks workplace safety signals, improves confidence, and rewrites resumes for ATS compatibility.
+CareerSphere AI is a production-oriented multi-agent career planner that analyzes skills, matches opportunities, evaluates workplace safety, rewrites resumes for ATS performance, and provides mentorship plus confidence support.
 
-## What This Repository Will Contain
-
-- A Next.js frontend for the user dashboard and resume upload flow
-- A FastAPI backend for orchestration, APIs, and data access
-- LangGraph-based agent workflow for multi-agent collaboration
-- Dedicated agents for skill analysis, opportunity matching, safety scoring, mentorship, confidence support, and resume optimization
-- Database, prompt, embedding, and utility layers to support the system
-
-## Target Architecture
+## Architecture
 
 ```text
 USER
 	|
-ORCHESTRATOR AGENT
+NEXT.JS DASHBOARD
 	|
-------------------------------------------------
-| Skill | Opportunity | Safety | Mentor Agent |
-------------------------------------------------
-								|
-			Resume Optimization Agent
-								|
-				 Confidence Agent
-								|
-				 FINAL CAREER PACKAGE
+FASTAPI API LAYER
+	|
+LANGGRAPH ORCHESTRATOR
+	|
+------------------------------------------------------------
+| Skill | Opportunity | Safety | Mentor | Confidence | Resume |
+------------------------------------------------------------
+	|
+POSTGRESQL + QDRANT + FIREBASE AUTH + OPENROUTER + JINA
 ```
 
-## Recommended Stack
+## Stack
 
-| Component | Choice |
+| Layer | Technology |
 | --- | --- |
-| Frontend | Next.js |
-| Backend | FastAPI |
-| Multi-Agent Framework | LangGraph |
-| Main LLM | GPT-5 |
-| Embeddings | text-embedding-3-small |
-| Vector DB | Pinecone |
+| Frontend | Next.js, Tailwind CSS, shadcn-style components |
+| Backend | FastAPI, SQLAlchemy, Pydantic |
+| Orchestration | LangGraph |
 | Database | PostgreSQL |
-| Authentication | Firebase |
-| Deployment | Vercel + Railway |
+| Vector Search | Qdrant |
+| Embeddings | Jina embeddings |
+| Model Routing | OpenRouter |
+| Authentication | Firebase Auth |
+| Deployment | Railway / Vercel |
 
-## Planned Folder Structure
+## Repository Layout
 
-```text
-project/
-├── frontend/
-├── backend/
-├── agents/
-│   ├── skill_agent.py
-│   ├── opportunity_agent.py
-│   ├── safety_agent.py
-│   ├── mentor_agent.py
-│   ├── confidence_agent.py
-│   └── resume_agent.py
-├── orchestrator/
-│   └── workflow.py
-├── database/
-├── prompts/
-├── embeddings/
-└── utils/
-```
+- `frontend/` Next.js dashboard, landing page, and auth UI
+- `backend/` FastAPI app, routes, services, database, embeddings, and vector search
+- `agents/` core agent implementations
+- `orchestrator/` LangGraph state and workflow
+- `prompts/` reusable prompt templates
+- `utils/` shared text and scoring helpers
 
-## Development Phases
+## Local Setup
 
-1. Resume upload, skill analysis, and job recommendation
-2. Multi-agent orchestration and shared memory
-3. Safety analysis
-4. Resume optimization
-5. Deployment and dashboard polish
+1. Copy the environment examples.
+2. Start infrastructure with `docker-compose up -d`.
+3. Run the FastAPI backend from the repo root with `uvicorn backend.main:app --reload`.
+4. Start the frontend from `frontend/` with `npm run dev`.
 
-## Next Step
+## Main API Endpoints
 
-The next implementation step is to convert this scaffold into a runnable app by setting up the backend API, agent interfaces, and the frontend shell.
+- `GET /health` health check
+- `POST /api/workflow/run` full multi-agent orchestration
+- `POST /api/resume/upload` resume parsing
+- `POST /api/resume/optimize` ATS rewrite pipeline
+- `POST /api/opportunities/search` semantic opportunity search
+- `POST /api/safety/check` workplace safety analysis
+
+## Notes
+
+- The code is model-agnostic through a `generate_response(model, prompt)` abstraction.
+- If API keys are missing, the system falls back to deterministic local behavior so the app still runs in development.
+- The frontend uses route groups for a landing page plus a sidebar-driven dashboard.

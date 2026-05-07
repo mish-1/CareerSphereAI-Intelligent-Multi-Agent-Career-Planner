@@ -1,0 +1,1 @@
+from agents.opportunity_agent import recommend_opportunities

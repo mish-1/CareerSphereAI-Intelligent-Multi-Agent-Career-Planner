@@ -1,0 +1,1 @@
+from agents.safety_agent import score_workplace_safety
