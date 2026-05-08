@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     openrouter_base_url: str = Field(default="https://openrouter.ai/api/v1", alias="OPENROUTER_BASE_URL")
     openrouter_model: str = Field(default="deepseek/deepseek-chat-v3-0324", alias="OPENROUTER_MODEL")
 
+    groq_api_key: str | None = Field(default=None, alias="GROQ_API_KEY")
+
     jina_api_key: str | None = Field(default=None, alias="JINA_API_KEY")
     jina_embeddings_url: str = Field(default="https://api.jina.ai/v1/embeddings", alias="JINA_EMBEDDINGS_URL")
     jina_embeddings_model: str = Field(default="jina-embeddings-v3", alias="JINA_EMBEDDINGS_MODEL")

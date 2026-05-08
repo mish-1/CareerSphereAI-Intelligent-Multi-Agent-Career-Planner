@@ -2,12 +2,14 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from backend.api.schemas import (
     ApiResponse,
+    MentorChatRequest,
     OpportunitySearchRequest,
     ResumeOptimizeRequest,
     SafetyCheckRequest,
     WorkflowRequest,
 )
 from backend.services.auth import get_current_user_optional
+from backend.services.mentor_chat import run_mentor_chat
 from backend.services.orchestrator import run_workflow
 from backend.services.resume_pipeline import parse_resume_file
 from backend.services.vector_search import search_documents
@@ -62,8 +64,50 @@ async def resume_optimize(payload: ResumeOptimizeRequest) -> ApiResponse:
     return ApiResponse(message="resume optimized", data=result)
 
 
+@router.post("/mentor/chat", response_model=ApiResponse)
+async def mentor_chat(payload: MentorChatRequest) -> ApiResponse:
+    response_text = await run_mentor_chat(payload.messages)
+    return ApiResponse(message="chat response generated", data={"text": response_text})
+
+
 @router.get("/me")
 async def current_user(current_user: dict | None = Depends(get_current_user_optional)) -> dict:
     if current_user is None:
         raise HTTPException(status_code=401, detail="Authentication required")
     return current_user
+
+
+@router.get("/profile", response_model=ApiResponse)
+async def get_profile(current_user: dict | None = Depends(get_current_user_optional)) -> ApiResponse:
+    """
+    Get the current user's profile.
+    """
+    if current_user is None:
+        # Return a default profile for unauthenticated users
+        return ApiResponse(
+            message="profile retrieved",
+            data={
+                "uid": "demo-user",
+                "email": "user@example.com",
+                "name": "Demo User",
+                "target_role": "Software Engineer",
+                "skills": ["Python", "JavaScript", "React"],
+                "interests": ["AI", "Web Development"],
+                "resume_text": "",
+                "location": "Remote",
+            }
+        )
+    
+    return ApiResponse(
+        message="profile retrieved",
+        data={
+            "uid": current_user.get("uid", "user"),
+            "email": current_user.get("email", "user@example.com"),
+            "name": current_user.get("name", "User"),
+            "target_role": current_user.get("target_role", "Software Engineer"),
+            "skills": current_user.get("skills", []),
+            "interests": current_user.get("interests", []),
+            "resume_text": current_user.get("resume_text", ""),
+            "location": current_user.get("location", "Remote"),
+        }
+    )

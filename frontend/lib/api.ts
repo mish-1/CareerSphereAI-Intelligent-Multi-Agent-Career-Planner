@@ -51,8 +51,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     };
     throw error;
   }
-
-  return (await response.json()) as T;
+  return response.json();
 }
 
 export async function uploadResume(file: File, targetRole?: string) {
@@ -92,6 +91,10 @@ export async function uploadResume(file: File, targetRole?: string) {
   return response.json();
 }
 
+export async function getProfile(): Promise<{ data: any }> {
+  return request("/profile");
+}
+
 export async function runWorkflow(payload: unknown) {
   return request<{ message: string; data: unknown }>("/workflow/run", {
     method: "POST",
@@ -110,6 +113,14 @@ export async function optimizeResume(payload: unknown) {
 
 export async function searchOpportunities(payload: unknown) {
   return request<{ message: string; data: unknown }>("/opportunities/search", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function runMentorChat(payload: unknown) {
+  return request<{ message: string; data: { text: string } }>("/mentor/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

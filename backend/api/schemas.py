@@ -31,6 +31,10 @@ class OpportunitySearchRequest(BaseModel):
     query: str | None = None
 
 
+class MentorChatRequest(BaseModel):
+    messages: list[dict[str, str]]
+
+
 class SafetyCheckRequest(BaseModel):
     company_name: str
     company_reviews: list[str] = Field(default_factory=list)
